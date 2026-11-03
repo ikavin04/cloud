@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: openshift-cicd-demo-pipeline
+spec:
+  workspaces:
+    - name: shared-source
+  tasks:
+    - name: cleanup
+      taskRef:
+        name: cleanup
+      workspaces:
+        - name: source
+          workspace: shared-source
+    - name: nose
+      runAfter:
+        - cleanup
+      taskRef:
+        name: nose
+      workspaces:
+        - name: source
+          workspace: shared-source

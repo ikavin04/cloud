@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openshift-cicd-demo
+  labels:
+    app: openshift-cicd-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openshift-cicd-demo
+  template:
+    metadata:
+      labels:
+        app: openshift-cicd-demo
+    spec:
+      containers:
+        - name: openshift-cicd-demo
+          # Replace this placeholder with the image built and pushed to your registry.
+          image: YOUR_REGISTRY/openshift-cicd-demo:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
